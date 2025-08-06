@@ -33,41 +33,45 @@ def create_share_holder(db: Session, share_holder: ShareHolderCreate,current_use
     db.refresh(db_share_holder)
     return db_share_holder
 
-def create_shareholder_with_user(db: Session, payload: ShareHolderCreate,current_user: User = Depends(get_current_user)):
+def create_shareholder_with_user(db: Session, payload: ShareHolderCreate, current_user: User):
+
     try:
+        print("payload.user.email", payload.user.email)
         existing_user = db.query(User).filter_by(email=payload.user.email).first()
+        print("existing_user", existing_user)
         if existing_user:
             raise HTTPException(status_code=400, detail="this email already exist.")
         
-        with db.begin():  
-            # 1. Créer le User
-            new_user = User(
-                id=uuid.uuid4(),
-                email=payload.user.email,
-                password=  hash_password(payload.user.password),  
-                status="shareholder"
-            )
-            db.add(new_user)
-            db.flush()  # pour récupérer new_user.id
+        # 1. Créer le User
+        new_user = User(
+            email=payload.user.email,
+            password=hash_password(payload.user.password),
+            status=payload.user.status
+        )
+        db.add(new_user)
+        db.flush()  # permet de récupérer new_user.id
 
-            # 2. Créer le ShareHolder lié au user
-            new_shareholder = ShareHolders(
-                id=uuid.uuid4(),
-                last_name=payload.last_name,
-                first_name=payload.first_name,
-                phone_number=payload.phone_number,
-                user_id=new_user.id,
-                created_by_id=payload.created_by_id
-            )
-            db.add(new_shareholder)
+       
+        # 2. Créer le ShareHolder lié au user
+        new_shareholder = ShareHolders(
+            last_name=payload.last_name,
+            first_name=payload.first_name,
+            phone_number=payload.phone_number,
+            user_id=new_user.id,
+            created_by_id=current_user.id
+        )
+        db.add(new_shareholder)
+
+        db.commit()  # <-- n'oublie pas de valider manuellement
 
         return new_shareholder
+
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Erreur d'intégrité (doublon email)")
     except SQLAlchemyError as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Erreur lors de la création")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def update_share_holder(db: Session, share_holder_id: int, share_holder_update: ShareHolderCreate):

@@ -5,7 +5,7 @@ from typing import List
 from core.schemas.share_holders_schemas import ShareHolderBase,ShareHolderCreate,ShareHolderResponse,ShareHolderUpdate 
 from database import get_db
 from core.services import share_holder_service
-from core.models import ShareHolders
+from core.models import ShareHolders, User
 from utils.get_current_user import get_current_user
 from utils.jwt import verify_token 
 
@@ -37,6 +37,7 @@ def delete_existing_share_holder(share_holders_id: int, db: Session = Depends(ge
     return db_share_holder
 
 @router.post("/", response_model=ShareHolderResponse)
-def create_new_share_holder(share_holder: ShareHolderCreate, db: Session = Depends(get_db)):
-    share_holder = share_holder_service.create_share_holder(db=db,share_holder=share_holder,current_user = Depends(get_current_user))
+def create_new_share_holder(share_holder: ShareHolderCreate, db: Session = Depends(get_db),current_user: User = Depends(get_current_user)):
+    print("current_user",current_user.id)
+    share_holder = share_holder_service.create_shareholder_with_user(db=db,payload=share_holder,current_user=current_user)
     return share_holder

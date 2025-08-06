@@ -118,7 +118,7 @@ class ShareInsurance(Base):
         default=uuid.uuid4, 
         index=True
     )
-    company_id = Column(UUID(as_uuid=True),ForeignKey('company.id'))
+    company_id = Column(UUID(as_uuid=True),ForeignKey('company.id'),null = True)
     company = relationship("Company",back_populates='share_insurance')
     
     attribution = relationship("Attribution",back_populates="share_insurance")
