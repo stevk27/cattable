@@ -5,11 +5,13 @@ from typing import List
 from core.schemas.user_schemas import User, UserCreate,UserUpdate
 from core.services import user_service 
 from database import get_db
+from utils.jwt import verify_token
 
 ##########################################################################################
 router = APIRouter(
     prefix="/users",
-    tags=["users"]
+    tags=["users"],
+    
 )
 
 

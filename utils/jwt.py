@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
+import os
 from jose import JWTError, jwt
 
 # Clé secrète pour signer le token
-SECRET_KEY = "super-secret-key"
-ALGORITHM = "HS256"
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # durée de vie du token
 
 # Générer un token

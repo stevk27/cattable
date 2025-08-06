@@ -22,13 +22,17 @@ class User(Base):
     email = Column(String(50), unique=True, index=True)
     password = Column(String(100))
     status = Column(Enum(UserRole), default=UserRole.USER)
-    share_holder = relationship("ShareHolders", back_populates="user", uselist=False)
     created_at = Column(DateTime,server_default=func.now())
     updated_at = Column(
         DateTime,
         server_default=func.now(),
         onupdate=func.now()
     )
+    
+    share_holder = relationship("ShareHolders", back_populates="user", uselist=False, foreign_keys='ShareHolders.user_id')
+
+    admin_share_holders = relationship("ShareHolders", back_populates="created_by", foreign_keys='ShareHolders.created_by_id')
+
 
 class Adresse(Base):
     __tablename__ = "adresse"
@@ -87,8 +91,13 @@ class ShareHolders(Base):
     first_name = Column(String(150) ,index = True, nullable=True)
     phone_number = Column(String(25),index = True)
     
-    user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
-    user = relationship("User",back_populates="share_holder")
+    user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=True)
+    user = relationship("User", back_populates="share_holder", foreign_keys=[user_id])
+
+    # the user who have the admin status can create the shareholder
+    created_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=True)
+    created_by = relationship("User", back_populates="admin_share_holders", foreign_keys=[created_by_id])
+
     
     attribution = relationship("Attribution",back_populates="share_holder")
     participation = relationship("Participation",back_populates="share_holder")
@@ -111,6 +120,7 @@ class ShareInsurance(Base):
     )
     company_id = Column(UUID(as_uuid=True),ForeignKey('company.id'))
     company = relationship("Company",back_populates='share_insurance')
+    
     attribution = relationship("Attribution",back_populates="share_insurance")
     number_of_share = Column(Integer,default=0)
     type_action = Column(String(100),nullable=True)
