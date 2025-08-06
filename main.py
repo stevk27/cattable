@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from typing import List
 import uvicorn
 
-from core.routers import user_router,auth,share_holder_router
+from core.routers import user_router,auth,share_holder_router,share_insurance_router
+
 
 
 
@@ -15,6 +16,7 @@ app = FastAPI(
 # Inclusion du routeur
 app.include_router(user_router.router)
 app.include_router(share_holder_router.router)
+app.include_router(share_insurance_router.router)
 app.include_router(auth.router)
 
 # Point de santé de l'API
