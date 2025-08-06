@@ -7,11 +7,12 @@ from core.models import Company
 
 
 class CompanyBase(BaseModel):
-    compagny_name: str
+    company_name: str
 
 class CompanyCreate(CompanyBase):
     adresse_id: Optional[uuid.UUID] = None
     share_insurance_ids: Optional[List[uuid.UUID]] = None
+
 class CompanyResponse(CompanyBase):
     id: uuid.UUID
     adresse_id: Optional[uuid.UUID] = None

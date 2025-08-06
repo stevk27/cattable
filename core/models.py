@@ -62,7 +62,7 @@ class Company(Base):
         default=uuid.uuid4, 
         index=True
     )
-    compagny_name = Column(String(150),index=True)
+    company_name = Column(String(150),index=True)
     
     adresse_id = Column(UUID(as_uuid=True), ForeignKey('adresse.id'),nullable=True)
     adresse = relationship("Adresse",back_populates="company")
@@ -184,7 +184,6 @@ class Participation(Base):
     total_share = Column(Integer,default=0)
     percentage_on_capital = Column(Float,nullable=True)
     created_at = Column(DateTime,server_default=func.now())
-
 
  
     

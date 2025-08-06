@@ -103,3 +103,4 @@ def delete_share_holder(db: Session, share_holder_id: int):
     db.delete(db_share_holder)
     db.commit()
     return db_share_holder
+
