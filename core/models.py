@@ -2,18 +2,14 @@ import enum
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
-from sqlalchemy import Column, DateTime, Float, Integer, Numeric, String, func,ForeignKey
+from sqlalchemy import Column, DateTime, Enum, Float, Integer, Numeric, String, func,ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from ..database import Base
+from core.enurations import UserRole
+from database import Base
 from sqlalchemy.orm import relationship
 import uuid
 
 ############################################################################################################ 
-class UserRole(enum.Enum):
-    USER = "user"
-    ADMIN = "admin"
-
-
 class User(Base):
     __tablename__ = "user"
 
@@ -25,7 +21,7 @@ class User(Base):
     )
     email = Column(String(50), unique=True, index=True)
     password = Column(String(100))
-    status = Column(enum.Enum(UserRole), default=UserRole.USER)
+    status = Column(Enum(UserRole), default=UserRole.USER)
     share_holder = relationship("ShareHolders", back_populates="user", uselist=False)
     created_at = Column(DateTime,server_default=func.now())
     updated_at = Column(
@@ -43,8 +39,8 @@ class Adresse(Base):
         default=uuid.uuid4, 
         index=True
     )
-    longitude = Column(Column(Float),nullable=True)
-    longitude = Column(Column(Float),nullable=True)
+    longitude = Column(Float,nullable=True)
+    latitude = Column(Float,nullable=True)
     city = Column(String(150),nullable=True)
     country = Column(String(150),nullable = True) 
     bp = Column(String(150),nullable = True)
@@ -138,8 +134,8 @@ class Attribution(Base):
     )
     share_insurance_id = Column(Integer,ForeignKey("share_insurance.id"))
     share_insurance = relationship("ShareInsurance",back_populates='attribution')
-    share_holder_id = Column(Integer,ForeignKey('share_holder.id'))
-    share_holder = relationship("ShareHolder",back_populates="attribution")
+    share_holder_id = Column(Integer,ForeignKey('share_holders.id'))
+    share_holder = relationship("ShareHolders",back_populates="attribution")
     emission_certificate_file_id = Column(Integer,ForeignKey("file.id"))
     emission_certificate_file = relationship("file",back_populates="attribution")
     number_of_share = Column(Integer,default=0)
@@ -156,8 +152,8 @@ class Participation(Base):
         default=uuid.uuid4, 
         index=True
     )
-    share_holder_id = Column(Integer,ForeignKey('share_holder.id'))
-    share_holder = relationship("ShareHolder",back_populates="attribution")
+    share_holder_id = Column(Integer,ForeignKey('share_holders.id'))
+    share_holder = relationship("ShareHolders",back_populates="attribution")
 
     company_id = Column(Integer,ForeignKey("company.id"))
     company = relationship("Company",back_populates="particiaption")
