@@ -38,3 +38,4 @@ def delete_existing_user(user_id: int, db: Session = Depends(get_db)):
 def create_new_user(user: UserCreate, db: Session = Depends(get_db)):
     user = user_service.create_user(db=db,user=user)
     return user
+

@@ -1,9 +1,10 @@
+import datetime
 from sqlalchemy.orm import Session
 from typing import List
 from core.models import User
 from core.schemas.user_schemas import UserCreate,UserUpdate
-from utils.security import hash_password
-
+from utils.security import hash_password, verify_password
+from utils.jwt import create_access_token
 
 ############################################################################################################################
 ################# User Service ########################### 
@@ -60,4 +61,21 @@ def delete_user(db: Session, user_id: int):
         
     db.delete(db_user)
     db.commit()
+    return db_user
+
+
+def authenticate_user(db: Session, email: str, password: str):
+    """
+    Authentifie un utilisateur en vérifiant son email et son mot de passe.
+    Retourne l'utilisateur si l'authentification est réussie, sinon None.
+    """
+    db_user = db.query(User).filter(User.email == email).first()
+    if not db_user or not verify_password(password, db_user.password):
+        return None
+    
+    # Met à jour la date de dernière connexion
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    
     return db_user

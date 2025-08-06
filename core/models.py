@@ -28,6 +28,7 @@ class User(Base):
         server_default=func.now(),
         onupdate=func.now()
     )
+    # last_login = Column(DateTime, nullable=True)
     
     share_holder = relationship("ShareHolders", back_populates="user", uselist=False, foreign_keys='ShareHolders.user_id')
     admin_share_holders = relationship("ShareHolders", back_populates="created_by", foreign_keys='ShareHolders.created_by_id')
