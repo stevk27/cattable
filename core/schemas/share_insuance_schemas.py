@@ -22,16 +22,16 @@ class CompanyResponse(CompanyBase):
     class Config:
         from_attributes = True
 
-class ShareInsuranceBase(BaseModel):
+class ShareInsuanceBase(BaseModel):
     number_of_share: int = 0
     type_action: Optional[str] = None
     unit_price: float = 0.000
 
-class ShareInsuranceCreate(ShareInsuranceBase):
+class ShareInsuanceCreate(ShareInsuanceBase):
     company_id: Optional[uuid.UUID] = None
 
 # Schéma de réponse pour l'entité ShareInsurance
-class ShareInsurance(ShareInsuranceBase):
+class ShareInsurance(ShareInsuanceBase):
     id: uuid.UUID
     company_id: Optional[uuid.UUID] = None
     created_at: datetime

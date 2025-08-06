@@ -5,7 +5,7 @@ from datetime import datetime
 
 # Importez les schémas des relations
 from core.schemas.adresse_schemas import Adresse
-from core.schemas.share_insurance_schemas import ShareInsurance
+from core.schemas.share_insuance_schemas import ShareInsurance
 from core.schemas.participation_shemas import Participation
 
 class CompanyBase(BaseModel):

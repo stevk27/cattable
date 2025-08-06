@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 
 # Importez les schémas des entités liées
-from core.schemas.share_insurance_schemas import ShareInsurance
+from core.schemas.share_insuance_schemas import ShareInsurance
 from core.schemas.share_holders_schemas import  ShareHolderResponse
 from core.schemas.file_schemas import File
 
@@ -18,13 +18,12 @@ class AttributionCreate(AttributionBase):
 
 class AttributionMinimal(BaseModel):
     id: uuid.UUID
-    share_insurance_id: uuid.UUID
-    share_holder_id: uuid.UUID
-    emission_certificate_file_id: Optional[uuid.UUID] = None
     created_at: datetime
 
-    
+
     emission_certificate_file: Optional[File] = None
+    share_insurance: ShareInsurance
+    share_holder: ShareHolderResponse
     class Config:
         orm_mode = True
     

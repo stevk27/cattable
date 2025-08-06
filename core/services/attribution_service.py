@@ -6,7 +6,8 @@ import os
 import io
 
 # Import des modèles SQLAlchemy
-from core.models import Attribution,ShareInsurance,ShareHolders,File
+from core.models import Attribution,ShareInsurance,ShareHolders,File,User
+from core.enurations import UserRole
 from core.services.participation_service import update_or_create_participation
 
 # Import des schémas Pydantic
@@ -14,7 +15,7 @@ from core.schemas.attribution_schema import AttributionCreate
 
 # Import de la bibliothèque pour la génération de PDF
 from fpdf import FPDF
-
+###############################################################################################################
 # Définissez le dossier de stockage pour les fichiers
 STORAGE_DIR = "storage/certificats_emission"
 if not os.path.exists(STORAGE_DIR):
@@ -122,6 +123,29 @@ def get_attribution_by_id(db: Session, attribution_id: uuid.UUID):
     """
     return db.query(Attribution).filter(Attribution.id == attribution_id).first()
 
+def get_all_attributions(
+    db: Session,
+    user: User,
+    skip: int = 0,
+    limit: int = 100
+):
+    """
+    Récupère une liste d'attributions en fonction du rôle de l'utilisateur.
+    """
+    if user.status == UserRole.ADMIN:
+        # Si c'est un ADMIN, retourne toutes les attributions
+        return db.query(Attribution).offset(skip).limit(limit).all()
+    else:
+        # Si c'est un USER, retourne seulement ses attributions
+        # On doit utiliser la relation pour filtrer les attributions par l'ID de l'actionnaire
+        share_holder_id = user.share_holder.id
+        if not share_holder_id:
+            return [] # L'utilisateur n'est pas un actionnaire, donc aucune attribution
+            
+        return db.query(Attribution)\
+                 .filter(Attribution.share_holder_id == share_holder_id)\
+                 .offset(skip).limit(limit).all()
+
 
 def get_certificate_file_by_attribution_id(db: Session, attribution_id: uuid.UUID):
     """
@@ -130,7 +154,7 @@ def get_certificate_file_by_attribution_id(db: Session, attribution_id: uuid.UUI
     attribution = get_attribution_by_id(db, attribution_id)
     if not attribution or not attribution.emission_certificate_file:
         return None
-    return attribution.emission_certificate_file
+    return attribution.emission_certificate_file.storage_path
 
 #################################################################################################" 
 

@@ -3,9 +3,9 @@ from typing import Optional, List
 import uuid
 
 from core.models import ShareInsurance 
-from core.schemas.share_insurance_schemas import ShareInsuranceCreate 
+from core.schemas.share_insuance_schemas import ShareInsuanceCreate 
 
-def create_share_insurance(db: Session, share_insurance_data: ShareInsuranceCreate):
+def create_share_insurance(db: Session, share_insurance_data: ShareInsuanceCreate):
      
     db_share_insurance = ShareInsurance(
         company_id=share_insurance_data.company_id,

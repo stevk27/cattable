@@ -4,13 +4,15 @@ from typing import List
 import uuid
 
 # Import des schémas et services
-from core.schemas.attribution_schema import AttributionResponse, AttributionCreate
+from core.schemas.attribution_schema import AttributionMinimal, AttributionResponse, AttributionCreate
 from core.services import attribution_service
 from  database import get_db
+from core.models import User
+from utils.get_current_user import get_current_user
 from utils.jwt import verify_token
 
 router = APIRouter(
-    prefix="/api/attributions",
+    prefix="/api/insuance",
     tags=["attributions"],
     dependencies=[Depends(verify_token)]
 )
@@ -63,3 +65,21 @@ def get_certificate(
     if not certificate_file:
         raise HTTPException(status_code=404, detail="Certificat non trouvé")
     return certificate_file 
+
+@router.get("/", response_model=List[AttributionMinimal])
+def read_all_attributions(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100
+):
+    """
+    Récupère la liste des attributions pour l'utilisateur connecté.
+    """
+    all_attributions = attribution_service.get_all_attributions(
+        db=db,
+        user=current_user, # On passe l'utilisateur au service
+        skip=skip,
+        limit=limit
+    )
+    return all_attributions

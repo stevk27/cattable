@@ -4,22 +4,22 @@ from typing import List
 import uuid
 
 from core.models import ShareInsurance 
-from core.schemas.share_insurance_schemas import ShareInsuranceCreate,ShareInsurance,ShareInsuranceBase
+from core.schemas.share_insuance_schemas import ShareInsuanceCreate,ShareInsurance,ShareInsuanceBase
 
 from core.services import share_insurance_service
 from  database import get_db
 from utils.jwt import verify_token
 
 router = APIRouter(
-    prefix="/api/share-insurances",
-    tags=["share-insurances"],
+    prefix="/api/share-insuances",
+    tags=["insuances"],
     responses={404: {"description": "Not found"}},
     dependencies=[Depends(verify_token)]
 )
 
 @router.post("/", response_model=ShareInsurance, status_code=status.HTTP_201_CREATED)
-def create_new_share_insurance(
-    share_insurance: ShareInsuranceCreate,
+def create_new_share_insuance(
+    share_insurance: ShareInsuanceCreate,
     db: Session = Depends(get_db)
 ):
     """

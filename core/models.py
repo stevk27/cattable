@@ -30,7 +30,6 @@ class User(Base):
     )
     
     share_holder = relationship("ShareHolders", back_populates="user", uselist=False, foreign_keys='ShareHolders.user_id')
-
     admin_share_holders = relationship("ShareHolders", back_populates="created_by", foreign_keys='ShareHolders.created_by_id')
 
 
@@ -185,5 +184,21 @@ class Participation(Base):
     percentage_on_capital = Column(Float,nullable=True)
     created_at = Column(DateTime,server_default=func.now())
 
- 
-    
+###################################################################################################################
+############ Manage Log app ####################### 
+class AuditEvent(Base):
+    __tablename__ = "audit_events"
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        index=True
+    )
+    user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=False)
+    action = Column(String(255), nullable=False)  
+    details = Column(String, nullable=True)  # Détails supplémentaires (ex: "Attribution de 50 parts à l'actionnaire...")
+    created_at = Column(DateTime, server_default=func.now())
+
+    # Relation avec l'utilisateur pour un affichage plus facile
+    user = relationship("User")
