@@ -59,8 +59,13 @@ class Company(Base):
         index=True
     )
     compagny_name = Column(String(150),index=True)
-    adresse_id = Column(Integer, ForeignKey('adresse.id'))
+    
+    adresse_id = Column(UUID(as_uuid=True), ForeignKey('adresse.id'),nullable=True)
     adresse = relationship("Adresse",back_populates="company")
+    
+    share_insurance = relationship("ShareInsurance", back_populates="company")
+    participation = relationship("Participation", back_populates="company")
+    
     created_at = Column(DateTime,server_default=func.now())
     updated_at = Column(
         DateTime,
@@ -81,8 +86,13 @@ class ShareHolders(Base):
     last_name = Column(String(150),index = True, nullable=True)
     first_name = Column(String(150) ,index = True, nullable=True)
     phone_number = Column(String(25),index = True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship("User",back_populates="shareHolders")
+    
+    user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
+    user = relationship("User",back_populates="share_holder")
+    
+    attribution = relationship("Attribution",back_populates="share_holder")
+    participation = relationship("Participation",back_populates="share_holder")
+    
     created_at = Column(DateTime,server_default=func.now())
     updated_at = Column(
         DateTime,
@@ -99,8 +109,9 @@ class ShareInsurance(Base):
         default=uuid.uuid4, 
         index=True
     )
-    company_id = Column(Integer,ForeignKey('company.id'))
-    company = relationship("Company",back_populates='shareInsurance')
+    company_id = Column(UUID(as_uuid=True),ForeignKey('company.id'))
+    company = relationship("Company",back_populates='share_insurance')
+    attribution = relationship("Attribution",back_populates="share_insurance")
     number_of_share = Column(Integer,default=0)
     type_action = Column(String(100),nullable=True)
     unit_price = Column(Numeric(10, 3),default=0)
@@ -119,7 +130,7 @@ class File(Base):
     file_name = Column(String)
     storage_path = Column(String)
     type_of_file = Column(String(50),nullable=True)
-    attribution = relationship("Attribution", back_populates="file", uselist=False)
+    attribution = relationship("Attribution", back_populates="emission_certificate_file", uselist=False)
     created_at = Column(DateTime,server_default=func.now())
 
 
@@ -132,14 +143,16 @@ class Attribution(Base):
         default=uuid.uuid4, 
         index=True
     )
-    share_insurance_id = Column(Integer,ForeignKey("share_insurance.id"))
+    share_insurance_id = Column(UUID(as_uuid=True),ForeignKey("share_insurance.id"))
     share_insurance = relationship("ShareInsurance",back_populates='attribution')
-    share_holder_id = Column(Integer,ForeignKey('share_holders.id'))
-    share_holder = relationship("ShareHolders",back_populates="attribution")
-    emission_certificate_file_id = Column(Integer,ForeignKey("file.id"))
-    emission_certificate_file = relationship("file",back_populates="attribution")
-    number_of_share = Column(Integer,default=0)
     
+    share_holder_id = Column(UUID(as_uuid=True),ForeignKey('share_holders.id'))
+    share_holder = relationship("ShareHolders",back_populates="attribution")
+    
+    emission_certificate_file_id = Column(UUID(as_uuid=True), ForeignKey("file.id"))
+    emission_certificate_file = relationship("File",back_populates="attribution")
+    
+    number_of_share = Column(Integer,default=0)
     attribution_date = Column(DateTime)
     created_at = Column(DateTime,server_default=func.now())
 
@@ -152,11 +165,12 @@ class Participation(Base):
         default=uuid.uuid4, 
         index=True
     )
-    share_holder_id = Column(Integer,ForeignKey('share_holders.id'))
-    share_holder = relationship("ShareHolders",back_populates="attribution")
+    share_holder_id = Column(UUID(as_uuid=True),ForeignKey('share_holders.id'))
+    share_holder = relationship("ShareHolders",back_populates="participation")
 
-    company_id = Column(Integer,ForeignKey("company.id"))
-    company = relationship("Company",back_populates="particiaption")
+    company_id = Column(UUID(as_uuid=True),ForeignKey("company.id"),nullable=True)
+    company = relationship("Company",back_populates="participation")
+    
     total_share = Column(Integer,default=0)
     percentage_on_capital = Column(Float,nullable=True)
     created_at = Column(DateTime,server_default=func.now())

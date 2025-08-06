@@ -3,8 +3,8 @@ from typing import Optional
 import uuid
 from datetime import datetime
 
-from .models import User 
-from enurations import UserRole
+from ..models import User 
+from core.enurations import UserRole
 
 # Schéma de base pour les attributs communs de l'utilisateur
 class UserBase(BaseModel):

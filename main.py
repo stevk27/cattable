@@ -2,12 +2,17 @@ from fastapi import FastAPI, HTTPException, Depends
 from typing import List
 import uvicorn
 
+from core.routers import user_router
+
 
 app = FastAPI(
     title="CAT TABLE API",
     description="cat table management",
     version="1.0.0"
 )
+
+# Inclusion du routeur
+app.include_router(user_router.router)
 
 # Point de santé de l'API
 @app.get("/")
