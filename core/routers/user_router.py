@@ -31,3 +31,8 @@ def delete_existing_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
+
+@router.post("/", response_model=User)
+def create_new_user(user: UserCreate, db: Session = Depends(get_db)):
+    user = user_service.create_user(db=db,user=user)
+    return user

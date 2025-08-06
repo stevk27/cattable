@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from core.models import User
 from core.schemas.user_schemas import UserCreate,UserUpdate
+from utils.security import hash_password
 
 
 ############################################################################################################################
@@ -25,7 +26,7 @@ def create_user(db: Session, user: UserCreate):
     """
     # Ici, vous pourriez ajouter une logique comme le hachage du mot de passe
     # hashed_password = hash_password(user.password)
-    db_user = User(email=user.email, password=user.password, status=user.status)
+    db_user = User(email=user.email, password= hash_password(user.password) , status=user.status)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
