@@ -15,6 +15,8 @@ from core.schemas.attribution_schema import AttributionCreate
 
 # Import de la bibliothèque pour la génération de PDF
 from fpdf import FPDF
+
+from core.services.log_service import log_event
 ###############################################################################################################
 # Définissez le dossier de stockage pour les fichiers
 STORAGE_DIR = "storage/certificats_emission"
@@ -92,6 +94,9 @@ def create_attribution(db: Session, attribution_data: AttributionCreate):
     db.commit()
     db.refresh(db_attribution)
 
+    # Enregistrement de l'événement d'audit
+    details = f"Attribution de {attribution_data.number_of_share} parts à l'actionnaire {attribution_data.share_holder_id}."
+    log_event(db, share_holder.user, "SHARE_ISSUANCE", details)
 
     #update the participation of the share holder
     company_id = db.query(ShareInsurance.company_id).filter(

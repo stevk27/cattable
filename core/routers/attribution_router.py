@@ -8,19 +8,19 @@ from core.schemas.attribution_schema import AttributionMinimal, AttributionRespo
 from core.services import attribution_service
 from  database import get_db
 from core.models import User
-from utils.get_current_user import get_current_user
+from utils.get_current_user import get_current_admin_user, get_current_user
 from utils.jwt import verify_token
 
 router = APIRouter(
     prefix="/api/insuance",
-    tags=["attributions"],
-    dependencies=[Depends(verify_token)]
+    tags=["attributions"]
 )
 
 @router.post("/", response_model=AttributionResponse, status_code=status.HTTP_201_CREATED)
 def create_new_attribution(
     attribution_data: AttributionCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin_user)
 ):
 
     try:

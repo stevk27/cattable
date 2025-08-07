@@ -3,7 +3,7 @@ from typing import List
 import uvicorn
 
 from core.routers import user_router,auth,share_holder_router,attribution_router,company_router,participation_router
-from core.routers import share_insuance_router,login
+from core.routers import share_insuance_router,login,log_router
 
 
 
@@ -21,6 +21,7 @@ app.include_router(attribution_router.router)
 app.include_router(participation_router.router)
 app.include_router(company_router.router)
 app.include_router(login.router)
+app.include_router(log_router.router)
 app.include_router(auth.router)
 
 # Point de santé de l'API

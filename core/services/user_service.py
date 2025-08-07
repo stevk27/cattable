@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from core.models import User
 from core.schemas.user_schemas import UserCreate,UserUpdate
+from core.services.log_service import log_event
 from utils.security import hash_password, verify_password
 from utils.jwt import create_access_token
 
@@ -78,4 +79,7 @@ def authenticate_user(db: Session, email: str, password: str):
     db.commit()
     db.refresh(db_user)
     
+    if db_user:
+        log_event(db, db_user, "LOGIN", "Connexion réussie.")
+
     return db_user

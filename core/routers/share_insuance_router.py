@@ -3,24 +3,25 @@ from sqlalchemy.orm import Session
 from typing import List
 import uuid
 
-from core.models import ShareInsurance 
+from core.models import ShareInsurance, User 
 from core.schemas.share_insuance_schemas import ShareInsuanceCreate,ShareInsurance,ShareInsuanceBase
 
 from core.services import share_insurance_service
 from  database import get_db
-from utils.jwt import verify_token
+from utils.get_current_user import get_current_admin_user
+
 
 router = APIRouter(
     prefix="/api/share-insuances",
     tags=["insuances"],
     responses={404: {"description": "Not found"}},
-    dependencies=[Depends(verify_token)]
 )
 
 @router.post("/", response_model=ShareInsurance, status_code=status.HTTP_201_CREATED)
 def create_new_share_insuance(
     share_insurance: ShareInsuanceCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin_user),
 ):
     """
     Crée un nouvel enregistrement d'assurance d'action.
